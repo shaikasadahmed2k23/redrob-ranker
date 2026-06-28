@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node / UI tests
+node_modules/
+ui/screenshot_*.png
+package-lock.json
+
+# Large data files -- never commit the candidate pool itself
+candidates.jsonl
+candidates.jsonl.gz
+*.jsonl.gz
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Don't commit a zip of the repo inside itself
+redrob-ranker-repo.zip

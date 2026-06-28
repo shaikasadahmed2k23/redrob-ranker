@@ -1,0 +1,95 @@
+# Redrob Hackathon — Submission Metadata
+# Mirrors what should be entered in the portal at upload time.
+
+# ============================================================================
+# Team identity
+# ============================================================================
+team_name: "Falcon"
+
+primary_contact:
+  name: "Shaik Asad Ahmed"
+  email: "shaikasadahmed2k23@gmail.com"
+  phone: "7995500364"
+
+
+
+# ============================================================================
+# Code and reproducibility
+# ============================================================================
+github_repo: "https://github.com/shaikasadahmed2k23/redrob-ranker"
+# Required. Must be reachable. Update before submitting.
+
+sandbox_link: "sandbox_link: "https://hub.docker.com/r/shaikasadahmed/redrob-ranker-sandbox"
+# Run with: docker run --rm shaikasadahmed/redrob-ranker-sandbox"
+# Required. See docs/sandbox.md for setup instructions (HuggingFace Spaces /
+# Streamlit Cloud / Replit / Colab / Docker / Binder).
+
+reproduce_command: "python src/rank.py --candidates ./candidates.jsonl --out ./submission.csv"
+# Single command, produces submission.csv from candidates.jsonl end-to-end.
+# Measured runtime: ~50-65 seconds on a 16GB CPU-only machine for the full
+# 100K-candidate pool.
+
+# ============================================================================
+# Compute environment
+# ============================================================================
+compute:
+  platform: "REPLACE -- e.g. MacBook Pro M2 / AWS EC2 / Local Linux box"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "3.12"
+  os: "REPLACE_WITH_YOUR_OS"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false
+  pre_computation_required: false
+  pre_computation_time_minutes: 0
+
+# ============================================================================
+# AI tools declaration
+# ============================================================================
+ai_tools_used:
+  - "Claude"
+
+ai_usage_summary: |
+  Used Claude (Anthropic) extensively as a development collaborator: explored
+  the candidate dataset jointly (company/title/skill enumeration, redrob_signals
+  percentile distributions, honeypot pattern detection), designed and
+  implemented the scoring architecture (feature extraction, disqualifier
+  rules, behavioral multiplier, TF-IDF/LSA semantic similarity), wrote and ran
+  the unit test suite, and iteratively debugged issues found by testing
+  against real data (e.g. a title-hopping heuristic that initially produced a
+  false positive on a strong candidate, and a recency-bonus threshold that
+  was dead code against the pool's actual activity distribution). No
+  candidate data was sent to any external hosted LLM API as part of the
+  ranking pipeline itself -- all ranking logic in src/ runs fully offline,
+  per the compute constraints in Section 3 of submission_spec.md.
+
+# ============================================================================
+# Approach summary
+# ============================================================================
+methodology_summary: |
+  Hybrid rule-based + TF-IDF/LSA ranker. Core fit score blends seven
+  components (title tier, career-history semantic similarity, trust-weighted
+  skill match, experience-band fit, company quality, location fit, education
+  tier) using hand-built lookup tables over the pool's closed universe of 63
+  companies, 48 titles, and 133 skills. A disqualifier multiplier encodes the
+  JD's explicit "things we do NOT want" section (pure-research-only careers,
+  consulting-only careers, CV/speech-only specialists, framework-only AI
+  exposure, title-hopping). A behavioral multiplier, calibrated against the
+  pool's own percentile distributions (not assumed thresholds), down-weights
+  inactive/unresponsive candidates per the JD's explicit instruction.
+  Honeypots (subtly impossible profiles) are detected via two validated
+  internal-consistency checks and excluded before scoring; measured honeypot
+  rate in the final top 100 is 0%. Full runtime for 100K candidates is
+  ~50-65 seconds on a 16GB CPU-only machine, well under the 5-minute budget,
+  with peak memory ~2.8GB. See docs/approach.md for full design rationale,
+  including heuristics we tested and rejected.
+
+# ============================================================================
+# Declarations
+# ============================================================================
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true
+  reproduction_tested: true

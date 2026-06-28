@@ -1,0 +1,12 @@
+{
+  "name": "redrob-ranker-dashboard",
+  "version": "1.0.0",
+  "description": "Standalone candidate ranking dashboard for the Falcon Redrob Hackathon submission. No build step, no server, no dependencies to run -- just open dashboard.html in a browser. Playwright is only needed to re-run the QA test suite in tests/.",
+  "private": true,
+  "scripts": {
+    "test": "for f in tests/test_*.js; do node \"$f\" || exit 1; done"
+  },
+  "devDependencies": {
+    "playwright": "1.56.0"
+  }
+}
