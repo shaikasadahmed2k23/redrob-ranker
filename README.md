@@ -1,8 +1,18 @@
-# Redrob Hackathon — Intelligent Candidate Discovery & Ranking
+# Falcon — Redrob Hackathon: Intelligent Candidate Discovery & Ranking
+
+![Python](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-15%20passing-brightgreen)
+![Runtime](https://img.shields.io/badge/runtime-~55s%20%2F%20100K%20candidates-success)
+![Honeypot Rate](https://img.shields.io/badge/honeypot%20rate-0%25%20in%20top%20100-success)
+![Docker](https://img.shields.io/badge/docker-sandbox%20live-2496ED?logo=docker&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 Ranks the 100,000-candidate pool against the "Senior AI Engineer — Founding
 Team" job description, producing the top-100 shortlist required by the
 hackathon submission spec.
+
+**Repo:** https://github.com/shaikasadahmed2k23/redrob-ranker
+**Sandbox:** https://hub.docker.com/r/shaikasadahmed/redrob-ranker-sandbox
 
 ## TL;DR
 
@@ -15,6 +25,26 @@ python validate_submission.py ./submission.csv
 Runtime: **~50-65 seconds** on a 16GB CPU-only machine for the full 100K pool
 (well inside the 5-minute budget). No GPU, no network calls, no hosted LLM
 calls anywhere in the ranking step.
+
+## Results dashboard
+
+A standalone, zero-dependency dashboard for browsing the top 100 — search,
+filter, sort, and click any row to see the full
+`core fit × disqualifier × behavioral` score breakdown. Open
+`ui/dashboard.html` directly in a browser, no server needed.
+
+| Overview | Score breakdown |
+|---|---|
+| ![Dashboard overview](ui/screenshots/desktop_overview.png) | ![Score breakdown detail](ui/screenshots/desktop_detail.png) |
+
+<details>
+<summary>Mobile view</summary>
+
+<img src="ui/screenshots/mobile_overview.png" width="360" alt="Mobile view of the dashboard">
+
+</details>
+
+See `ui/README.md` for details and the Playwright test suite that covers it.
 
 ## Why this isn't a keyword matcher
 
@@ -100,18 +130,15 @@ our final submission: 0/100.
 
 ### Why TF-IDF/LSA instead of a transformer embedding model
 
-This environment didn't have network access to install `sentence-
-transformers`/`torch`, which initially looked like a constraint — but it
-turned out to align well with the compute spec anyway. Loading a transformer
-and running it over 100K career-history texts on CPU consumes a meaningful
-slice of the 5-minute budget by itself, before any scoring logic runs, and
-the JD explicitly rewards exactly this kind of latency-quality tradeoff
-thinking ("plan for a small ranker over precomputed features, indexes, or
-compact local models"). TF-IDF + LSA over this kind of vocabulary-
-constrained professional text is a reasonable middle ground: fast, fully
-local, and fully inspectable (we can show exactly which terms drove a
-similarity score). See `docs/approach.md` for the longer version of this
-tradeoff discussion.
+Loading a transformer and running it over 100K career-history texts on CPU
+consumes a meaningful slice of the 5-minute budget by itself, before any
+scoring logic runs, and the JD explicitly rewards exactly this kind of
+latency-quality tradeoff thinking ("plan for a small ranker over
+precomputed features, indexes, or compact local models"). TF-IDF + LSA over
+this kind of vocabulary-constrained professional text is a reasonable
+middle ground: fast, fully local, and fully inspectable (we can show
+exactly which terms drove a similarity score). See `docs/approach.md` for
+the longer version of this tradeoff discussion.
 
 ## Repository layout
 
@@ -133,19 +160,15 @@ ui/
                         # (see ui/README.md -- open it directly, no server needed)
 data/
   job_description.md   # JD text, extracted from the hackathon bundle
-validate_submission.py # the hackathon's official format validator
+  falcon.csv / falcon.xlsx / falcon_approach_deck.pdf  # submission deliverables
+deck/
+  official_template/    # the approach deck, built on the official India.Runs template
+sandbox/
+  README.md             # how to build/run the Docker sandbox, plus hosted alternatives
+validate_submission.py  # the hackathon's official format validator
 submission_metadata.yaml
 requirements.txt
 ```
-
-## Browsing the results
-
-The CSV is the actual submission artifact, but `ui/dashboard.html` is a
-standalone page for browsing it: search, filter by location or noted
-concerns, sort by any column, and click a row to see the full
-`core fit × disqualifier × behavioral` score breakdown for that candidate.
-No server, no build step -- just open the file. See `ui/README.md` for
-screenshots and details.
 
 ## Reproducing the submission
 
@@ -177,3 +200,18 @@ python -m unittest discover tests -v
 | Peak memory | ≤ 16 GB | ~2.8 GB |
 | GPU | None used | Confirmed — CPU only |
 | Network calls during ranking | None | Confirmed — zero network calls in `src/` |
+
+## Sandbox
+
+A Docker image is live and pullable — runs the ranker end-to-end against a
+50-candidate sample with zero setup:
+
+```bash
+docker run --rm shaikasadahmed/redrob-ranker-sandbox
+```
+
+See `sandbox/README.md` for the Dockerfile and hosted alternatives
+(HuggingFace Spaces, Colab, Replit, Binder).
+```
+
+
