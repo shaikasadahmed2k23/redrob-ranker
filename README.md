@@ -11,7 +11,7 @@ Ranks the 100,000-candidate pool against the "Senior AI Engineer — Founding
 Team" job description, producing the top-100 shortlist required by the
 hackathon submission spec.
 
-**Repo:** https://github.com/shaikasadahmed2k23/redrob-ranker
+**Repo:** https://github.com/shaikasadahmed2k23/redrob-ranker <br>
 **Sandbox:** https://hub.docker.com/r/shaikasadahmed/redrob-ranker-sandbox
 
 ## TL;DR
